@@ -1,4 +1,4 @@
-package osman.springktolin.com.springbootkotlin.security
+package com.osman.springkotlin.security
 
 import org.junit.Before
 import org.junit.Test

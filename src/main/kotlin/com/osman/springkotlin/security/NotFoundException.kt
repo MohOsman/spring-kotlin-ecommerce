@@ -1,4 +1,4 @@
-package osman.springktolin.com.springbootkotlin.security
+package com.osman.springkotlin.security
 
 import java.lang.RuntimeException
 

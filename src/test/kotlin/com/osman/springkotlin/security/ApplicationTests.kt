@@ -1,4 +1,4 @@
-package osman.springktolin.com.springbootkotlin.security
+package com.osman.springkotlin.security
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
