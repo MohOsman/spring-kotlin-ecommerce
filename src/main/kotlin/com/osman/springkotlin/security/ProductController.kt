@@ -4,39 +4,55 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
 
-@RestController("")
+@RestController()
 class ProductController {
     @Autowired
     lateinit var productService: ProductService
 
-    @PostMapping("/create")
-    fun createItem(@RequestBody product: Product): ResponseEntity<Product> {
+    @PostMapping("/add")
+    fun createProduct(@RequestBody product: Product): ResponseEntity<Product> {
+        val uuid = UUID.randomUUID().toString()
+        product.id = uuid
         val item = productService.create(product)
+
+
         return ResponseEntity(item, HttpStatus.CREATED)
     }
 
-    @GetMapping("/item/{id}")
-    fun getitem(@PathVariable id: String): ResponseEntity<Product> {
+    @GetMapping("/product/{id}")
+    fun getProduct(@PathVariable id: String): ResponseEntity<Product> {
         try {
             return ResponseEntity(productService.getProduct(id), HttpStatus.OK)
-        } catch (e: NotFoundException) { return ResponseEntity(HttpStatus.NOT_FOUND)
+        } catch (e: NotFoundException) {
+            return ResponseEntity(HttpStatus.NOT_FOUND)
 
         }
     }
 
     //only authrozied
     @DeleteMapping("/deleteAll")
-    fun  deleteAll() :Unit {
-        productService.deleteAll();
+    fun deleteAll() {
+        productService.deleteAll()
     }
 
-    @GetMapping("/items")
-    fun getAll() : ResponseEntity<List<Product>>{
+    @DeleteMapping("/delete/{id}")
+    fun deleteProduct(@PathVariable id: String): ResponseEntity<Product> {
+        return try {
+            productService.delete(id)
+            ResponseEntity(HttpStatus.OK)
+        } catch (e: NotFoundException) {
+            ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+    }
+
+
+    @GetMapping("/products")
+    fun getAll(): ResponseEntity<List<Product>> {
         return ResponseEntity(productService.getAll(), HttpStatus.OK)
     }
-
 
 
 }
