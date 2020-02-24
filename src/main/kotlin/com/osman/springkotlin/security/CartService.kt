@@ -2,50 +2,64 @@ package com.osman.springkotlin.security
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.repository.MongoRepository
-import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import java.util.*
 
+
 @Service
-class CartService @Autowired constructor(val cartRepository: CartRepository, val productService: ProductService) {
+class CartService @Autowired constructor(val productService: ProductService,
+                                         val inventoryService: InventoryService,
+                                         val cartRepository: CartRepository) {
 
 
-    fun getProduct(id: String): CartProduct = cartRepository.findById(id).orElseThrow { NotFoundException("Product with id $id   do not exist in the cart") }
+    fun addTodCart(productId: String, quantity: Int): ShoppingCart {
+        val inventoryQuantity = inventoryService.getProductQuantity(productId)
+        val maxQuantity = if (inventoryQuantity!! >= quantity) inventoryQuantity else quantity
 
-    fun getProducts(): List<CartProduct> = cartRepository.findAll()
+        val lineProduct = if (doesProductExistAlreadyInCart(productId))
+            updateProductQuantity(productId, maxQuantity)
+        else
+            addNewLineProduct(productId, maxQuantity)
 
-    fun getCartProductByProductId(productId: String): CartProduct = cartRepository.findByProductId(productId).orElseThrow { NotFoundException("Product with id $productId   do not exsit in the cart") }
+        val shoppingCart = ShoppingCart(UUID.randomUUID().toString(),
+                mutableListOf(lineProduct),
+                lineProduct.quantity * lineProduct.product.unitPrice)
+        return cartRepository.save(shoppingCart)
+    }
 
+    private fun addNewLineProduct(productId: String, quantity: Int): LineProduct {
+        val product: Product = productService.getProduct(productId)
+        return LineProduct(UUID.randomUUID().toString(), product, quantity)
+    }
 
-    fun addToCart(productID: String, quantity: Int = 1): CartProduct {
-        val product = productService.getProduct(productID)
-        val maxQuantity = if (product.totalQuantity <= quantity) product.totalQuantity else quantity
-        return if (cartRepository.findByProductId(productID).isPresent) {
-            val cartProduct = getCartProductByProductId(productID)
-            updateQuantity(maxQuantity, cartProduct)
-        } else {
-            createCartproduct(productID, maxQuantity)
-        }
+    private fun updateProductQuantity(productId: String, quantity: Int): LineProduct {
+        val oldLineProduct = getLineProduct(productId)
+        return LineProduct(oldLineProduct.id, oldLineProduct.product, quantity)
+
 
     }
 
-    private fun createCartproduct(productID: String, quantity: Int): CartProduct {
-        val product = productService.getProduct(productID)
-        val totalPrice = product.unitPrice.times(quantity)
-        val orderProduct = CartProduct(UUID.randomUUID().toString(), product, totalPrice, quantity)
-        return cartRepository.save(orderProduct)
+    private fun doesProductExistAlreadyInCart(productId: String): Boolean {
+        return if (cartRepository.count() > 0)
+            cartRepository
+                    .findAll()
+                    .first()
+                    .lineProducts
+                    .any { lineProduct -> lineProduct.product.id == productId }
+        else
+            false
+
     }
 
-    private fun updateQuantity(quantity: Int, cartProduct: CartProduct): CartProduct {
-        val price = cartProduct.price.plus(cartProduct.Product.unitPrice * quantity)
-        val updatedCartProduct = CartProduct(cartProduct.id, cartProduct.Product, price, quantity)
-        return cartRepository.save(updatedCartProduct)
+    private fun getLineProduct(productId: String): LineProduct {
+        return cartRepository.findAll()
+                .first().lineProducts
+                .find { lineProduct -> lineProduct.product.id == productId }!!
     }
+
+
 }
 
+interface CartRepository : MongoRepository<ShoppingCart, String>
 
-@Repository
-interface CartRepository : MongoRepository<CartProduct, String> {
-    fun findByProductId(productId: String): Optional<CartProduct>
 
-}

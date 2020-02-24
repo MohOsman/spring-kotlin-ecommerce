@@ -1,14 +1,13 @@
 package com.osman.springkotlin.security.servicetest
 
+
 import com.osman.springkotlin.security.*
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-
-
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.mockito.*
+import kotlin.test.assertEquals
 
 
 @RunWith(JUnit4::class)
@@ -20,6 +19,9 @@ internal class CartServiceTest {
     @Mock
     lateinit var productService: ProductService
 
+    @Mock
+    lateinit var inventoryService: InventoryService
+
     @InjectMocks
     private lateinit var cartService: CartService
 
@@ -30,32 +32,40 @@ internal class CartServiceTest {
     }
 
     @Test
-    fun `test adding to cart success`() {
-        Mockito.`when`(productService.getProduct(ArgumentMatchers.anyString())).thenReturn(getTestProduct(100).get())
-        Mockito.`when`(cartRepository.save(Mockito.any<CartProduct>())).thenReturn(getTestCartProduct(2).get())
-        val cartProduct = cartService.addToCart(getTestProduct(11).get().id!!)
+    fun `test adding one product to cart success`() {
 
-        Assert.assertEquals(cartProduct.quantity, 2)
-        Assert.assertEquals(cartProduct.price, getTestProduct(15).get().unitPrice * 2)
+        Mockito.`when`(inventoryService.getProductQuantity(ArgumentMatchers.anyString())).thenReturn(200)
+        Mockito.`when`(productService.getProduct(ArgumentMatchers.anyString())).thenReturn(getTestProduct().get())
+        Mockito.`when`(cartRepository.save(Mockito.any<ShoppingCart>())).thenReturn(getTestShoppingCart(2, getTestProduct().get()))
+        val shoppingCart = cartService.addTodCart(getTestProduct().get().id, 2)
+
+        assertEquals(shoppingCart.lineProducts[0].quantity, 2)
+        assertEquals(shoppingCart.totalPrice, getTestProduct().get().unitPrice * 2)
+
+        Mockito.verify(cartRepository, Mockito.times(1)).save(Mockito.any())
+        Mockito.verify(inventoryService, Mockito.times(1)).getProductQuantity(Mockito.anyString())
+        Mockito.verify(productService, Mockito.times(1)).getProduct(Mockito.anyString())
+
     }
 
-
     @Test
-    fun `test adding to cart with more quantity than inventory  `() {
-        Mockito.`when`(productService.getProduct(ArgumentMatchers.anyString())).thenReturn(getTestProduct(15).get())
-        Mockito.`when`(cartRepository.save(Mockito.any<CartProduct>())).thenReturn(getTestCartProduct(15).get())
-        val cartProduct = cartService.addToCart(getTestProduct(200).get().id!!)
-        Assert.assertEquals(cartProduct.quantity, 15)
-        Assert.assertEquals(cartProduct.price, getTestProduct(15).get().unitPrice * 15)
-    }
+    fun `test adding multiple identical products to cart`() {
 
+        Mockito.`when`(inventoryService.getProductQuantity(ArgumentMatchers.anyString())).thenReturn(200)
+        Mockito.`when`(productService.getProduct(ArgumentMatchers.anyString())).thenReturn(getTestProduct().get())
+        Mockito.`when`(cartRepository.findAll()).thenReturn(mutableListOf(getTestShoppingCart(2, getTestProduct().get())))
+        Mockito.`when`(cartRepository.count()).thenReturn(1)
+        Mockito.`when`(cartRepository.save(Mockito.any<ShoppingCart>())).thenReturn(getTestShoppingCart(2, getTestProduct().get()))
 
-    @Test
-    fun `test get cart product by product id`() {
-        Mockito.`when`(productService.getProduct(Mockito.anyString())).thenReturn(getTestProduct(20).get())
-        Mockito.`when`(cartRepository.findByProductId(Mockito.anyString())).thenReturn(getTestCartProduct())
-        val cartProduct = cartService.getCartProductByProductId(getTestProduct().get().id!!)
-        Assert.assertEquals(productService.getProduct(getTestProduct().get().id!!).id, cartProduct.Product.id!!)
+        val shoppingCart = cartService.addTodCart(getTestProduct().get().id, 2)
+
+        assertEquals(shoppingCart.lineProducts[0].quantity, 2)
+        assertEquals(shoppingCart.totalPrice, getTestProduct().get().unitPrice * 2)
+
+        Mockito.verify(cartRepository, Mockito.times(1)).save(Mockito.any())
+        Mockito.verify(inventoryService, Mockito.times(1)).getProductQuantity(Mockito.anyString())
+        Mockito.verify(productService, Mockito.times(0)).getProduct(Mockito.anyString())
+
     }
 }
 

@@ -32,24 +32,24 @@ internal class ProductServiceTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun `test create a product that already exist fail`() {
-        `when`(productRepository.findById(ArgumentMatchers.anyString())).thenReturn(getTestProduct(15))
-        productService.create(getTestProduct(15).get())
+        `when`(productRepository.findById(ArgumentMatchers.anyString())).thenReturn(getTestProduct())
+        productService.create(getTestProduct().get())
         verify(productRepository, times(0)).save(any<Product>())
 
     }
 
     @Test
     fun `test adding product sucsess`() {
-        `when`(productRepository.save(any<Product>())).thenReturn(getTestProduct(15).get())
-        val returnedproduct = productService.create(getTestProduct(15).get())
+        `when`(productRepository.save(any<Product>())).thenReturn(getTestProduct().get())
+        val returnedproduct = productService.create(getTestProduct().get())
 
         verify(productRepository, times(1)).save(any<Product>())
-        assertEquals(returnedproduct.name, getTestProduct(15).get().name)
+        assertEquals(returnedproduct.name, getTestProduct().get().name)
     }
 
     @Test
     fun `test get all products`() {
-        `when`(productRepository.findAll()).thenReturn(listOf(getTestProduct(15).get(), getTestProduct2().get()))
+        `when`(productRepository.findAll()).thenReturn(listOf(getTestProduct().get(), getTestProduct2().get()))
         val products = productService.getAll()
 
         verify(productRepository, times(1)).findAll()
@@ -61,7 +61,7 @@ internal class ProductServiceTest {
     @Test
     fun `test deleting product success`() {
         `when`(productRepository.existsById(ArgumentMatchers.anyString())).thenReturn(true)
-        productService.delete(getTestProduct().get().id!!)
+        productService.delete(getTestProduct().get().id)
         verify(productRepository, times(1)).deleteById(ArgumentMatchers.anyString())
         assertEquals(0, productService.getAll().size)
 

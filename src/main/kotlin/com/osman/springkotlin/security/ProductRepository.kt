@@ -7,3 +7,5 @@ import org.springframework.stereotype.Repository
 interface ProductRepository : MongoRepository<Product, String>
 
 
+@Repository
+interface OrderRepository : MongoRepository<Order, String>
