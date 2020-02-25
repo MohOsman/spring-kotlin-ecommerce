@@ -1,4 +1,4 @@
-package com.osman.springkotlin.security
+package com.osman.springkotlin.ecommerce
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus

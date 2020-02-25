@@ -1,4 +1,4 @@
-package com.osman.springkotlin.security
+package com.osman.springkotlin.ecommerce
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -8,7 +8,7 @@ class ProductService @Autowired constructor(val productRepository: ProductReposi
 
     // Todo add some validation to the logic
     fun create(product: Product): Product {
-        if (productRepository.findById(product.id!!).isPresent) {
+        if (productRepository.findById(product.id).isPresent) {
             throw  IllegalArgumentException("person with the id  ${product.id} already exist")
         }
         return productRepository.save(product)

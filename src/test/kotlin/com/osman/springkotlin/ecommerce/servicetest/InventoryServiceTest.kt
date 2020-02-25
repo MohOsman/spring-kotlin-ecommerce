@@ -1,6 +1,6 @@
-package com.osman.springkotlin.security.servicetest
+package com.osman.springkotlin.ecommerce.servicetest
 
-import com.osman.springkotlin.security.*
+import com.osman.springkotlin.ecommerce.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -1,4 +1,4 @@
-package com.osman.springkotlin.security.endpoint
+package com.osman.springkotlin.ecommerce.endpoint
 
 import org.junit.Ignore
 import org.junit.Test

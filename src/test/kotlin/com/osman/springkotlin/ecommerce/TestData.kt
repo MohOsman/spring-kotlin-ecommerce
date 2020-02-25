@@ -1,4 +1,4 @@
-package com.osman.springkotlin.security
+package com.osman.springkotlin.ecommerce
 
 import java.util.*
 

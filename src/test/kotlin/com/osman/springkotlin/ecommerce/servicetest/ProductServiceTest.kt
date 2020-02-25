@@ -1,7 +1,7 @@
-package com.osman.springkotlin.security.servicetest
+package com.osman.springkotlin.ecommerce.servicetest
 
 
-import com.osman.springkotlin.security.*
+import com.osman.springkotlin.ecommerce.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
