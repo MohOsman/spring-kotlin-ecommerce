@@ -12,11 +12,11 @@ class ProductController {
     @Autowired
     lateinit var productService: ProductService
 
-    @PostMapping("/add")
-    fun createProduct(@RequestBody product: Product): ResponseEntity<Product> {
+    @PostMapping("/add/{stockQuantity}")
+    fun createProduct(@RequestBody product: Product, @PathVariable stockQuantity: Int): ResponseEntity<Product> {
         val uuid = UUID.randomUUID().toString()
         product.id = uuid
-        val item = productService.create(product)
+        val item = productService.create(product, stockQuantity)
 
 
         return ResponseEntity(item, HttpStatus.CREATED)

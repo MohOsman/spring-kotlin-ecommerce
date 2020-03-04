@@ -14,17 +14,20 @@ class CartService @Autowired constructor(val productService: ProductService,
 
     fun addTodCart(productId: String, quantity: Int): ShoppingCart {
         val inventoryQuantity = inventoryService.getProductQuantity(productId)
-        val maxQuantity = if (inventoryQuantity!! >= quantity) inventoryQuantity else quantity
+        val maxQuantity = if (inventoryQuantity!! <= quantity) inventoryQuantity else quantity
 
         val lineProduct = if (doesProductExistAlreadyInCart(productId))
             updateProductQuantity(productId, maxQuantity)
         else
             addNewLineProduct(productId, maxQuantity)
 
+
         val shoppingCart = ShoppingCart(UUID.randomUUID().toString(),
                 mutableListOf(lineProduct),
                 lineProduct.quantity * lineProduct.product.unitPrice)
-        return cartRepository.save(shoppingCart)
+
+
+        return save(shoppingCart)
     }
 
     private fun addNewLineProduct(productId: String, quantity: Int): LineProduct {
@@ -35,7 +38,6 @@ class CartService @Autowired constructor(val productService: ProductService,
     private fun updateProductQuantity(productId: String, quantity: Int): LineProduct {
         val oldLineProduct = getLineProduct(productId)
         return LineProduct(oldLineProduct.id, oldLineProduct.product, quantity)
-
 
     }
 
@@ -55,6 +57,27 @@ class CartService @Autowired constructor(val productService: ProductService,
         return cartRepository.findAll()
                 .first().lineProducts
                 .find { lineProduct -> lineProduct.product.id == productId }!!
+    }
+
+    private fun save(shoppingCart: ShoppingCart): ShoppingCart {
+        if (cartRepository.count() == 1L) {
+            val lineProducts = getShoppingCart().lineProducts
+            lineProducts.addAll(shoppingCart.lineProducts)
+            // change total price
+            val updatedShoppingCart = ShoppingCart(getShoppingCart().id, lineProducts, shoppingCart.totalPrice)
+            return cartRepository.save(updatedShoppingCart)
+        } else {
+            return cartRepository.save(shoppingCart)
+        }
+
+    }
+
+    fun getShoppingCart(): ShoppingCart {
+        if (cartRepository.count() == 0L) {
+            throw NotFoundException(" Active Shopping cart does not exist")
+        } else {
+            return cartRepository.findAll().first()
+        }
     }
 
 

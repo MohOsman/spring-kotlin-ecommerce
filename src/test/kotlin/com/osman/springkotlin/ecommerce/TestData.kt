@@ -15,7 +15,7 @@ fun getInventory(): Invetory {
 
 }
 
-fun createLinProducts(quantity: Int = 1): List<LineProduct> {
+fun createLinProducts(quantity: Int = 1): MutableList<LineProduct> {
     return mutableListOf(LineProduct(lineProductID, getTestProduct().get(), quantity))
 }
 

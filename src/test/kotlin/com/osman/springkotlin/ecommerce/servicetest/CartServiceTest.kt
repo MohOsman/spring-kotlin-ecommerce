@@ -37,7 +37,7 @@ internal class CartServiceTest {
         Mockito.`when`(inventoryService.getProductQuantity(ArgumentMatchers.anyString())).thenReturn(200)
         Mockito.`when`(productService.getProduct(ArgumentMatchers.anyString())).thenReturn(getTestProduct().get())
         Mockito.`when`(cartRepository.save(Mockito.any<ShoppingCart>())).thenReturn(getTestShoppingCart(2, getTestProduct().get()))
-        val shoppingCart = cartService.addTodCart(getTestProduct().get().id, 2)
+        val shoppingCart = cartService.addTodCart(getTestProduct().get().id!!, 2)
 
         assertEquals(shoppingCart.lineProducts[0].quantity, 2)
         assertEquals(shoppingCart.totalPrice, getTestProduct().get().unitPrice * 2)
@@ -57,7 +57,7 @@ internal class CartServiceTest {
         Mockito.`when`(cartRepository.count()).thenReturn(1)
         Mockito.`when`(cartRepository.save(Mockito.any<ShoppingCart>())).thenReturn(getTestShoppingCart(2, getTestProduct().get()))
 
-        val shoppingCart = cartService.addTodCart(getTestProduct().get().id, 2)
+        val shoppingCart = cartService.addTodCart(getTestProduct().get().id!!, 2)
 
         assertEquals(shoppingCart.lineProducts[0].quantity, 2)
         assertEquals(shoppingCart.totalPrice, getTestProduct().get().unitPrice * 2)

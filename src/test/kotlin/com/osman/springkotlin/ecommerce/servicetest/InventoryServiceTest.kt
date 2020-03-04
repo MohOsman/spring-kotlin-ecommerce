@@ -38,8 +38,6 @@ internal class InventoryServiceTest {
     @Test
     fun `test  get inventory products `() {
         Mockito.`when`(inventoryRepository.findById(Mockito.anyString())).thenReturn(Optional.of(getInventory()))
-        assertEquals(200, inventoryService.getProductQuantity(getTestProduct().get().id))
+        assertEquals(200, inventoryService.getProductQuantity(getTestProduct().get().id!!))
     }
-
-
 }

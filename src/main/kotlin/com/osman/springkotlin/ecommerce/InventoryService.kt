@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 class InventoryService @Autowired constructor(val inventoryRepository: InventoryRepository) {
 
 
-    val inventoryID = "Inventory-2314"
+    val inventoryID = "inventory-1321"
 
     fun createInventory(invetory: Invetory): Invetory {
         return inventoryRepository.save(invetory)
@@ -31,6 +31,10 @@ class InventoryService @Autowired constructor(val inventoryRepository: Inventory
         }
         throw  NotFoundException("Product id doesnt exist in inventory ")
 
+    }
+
+    fun count(): Long {
+        return inventoryRepository.count()
     }
 }
 

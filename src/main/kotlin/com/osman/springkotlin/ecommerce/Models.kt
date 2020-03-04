@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
-data class Product(@Id var id: String, val name: String, val description: String, val unitPrice: Int)
+data class Product(@Id var id: String?, val name: String, val description: String, val unitPrice: Int)
 
 @Document
 data class Invetory(@Id val id: String, val InventoryHash: Map<String, Int>)
@@ -13,7 +13,7 @@ data class Invetory(@Id val id: String, val InventoryHash: Map<String, Int>)
 data class LineProduct(@Id val id: String, val product: Product, val quantity: Int)
 
 
-data class ShoppingCart(@Id val id: String, val lineProducts: List<LineProduct>, val totalPrice: Int)
+data class ShoppingCart(@Id val id: String, val lineProducts: MutableList<LineProduct>, val totalPrice: Int)
 
 @Document
 data class Order(@Id val id: String,
