@@ -20,6 +20,10 @@ internal class ProductServiceTest {
     @Mock
     private lateinit var productRepository: ProductRepository
 
+    @Mock
+    private lateinit var inventoryService: InventoryService
+
+
     @InjectMocks
     lateinit var productService: ProductService
 

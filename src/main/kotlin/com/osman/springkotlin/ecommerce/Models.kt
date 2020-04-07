@@ -10,7 +10,7 @@ data class Product(@Id var id: String?, val name: String, val description: Strin
 data class Invetory(@Id val id: String, val InventoryHash: Map<String, Int>)
 
 
-data class LineProduct(@Id val id: String, val product: Product, val quantity: Int)
+data class LineProduct(@Id val id: String, val product: Product, val quantity: Int, val price: Int)
 
 
 data class ShoppingCart(@Id val id: String, val lineProducts: MutableList<LineProduct>, val totalPrice: Int)

@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 
 @RestController()
@@ -14,20 +13,16 @@ class ProductController {
 
     @PostMapping("/add/{stockQuantity}")
     fun createProduct(@RequestBody product: Product, @PathVariable stockQuantity: Int): ResponseEntity<Product> {
-        val uuid = UUID.randomUUID().toString()
-        product.id = uuid
         val item = productService.create(product, stockQuantity)
-
-
         return ResponseEntity(item, HttpStatus.CREATED)
     }
 
     @GetMapping("/product/{id}")
     fun getProduct(@PathVariable id: String): ResponseEntity<Product> {
-        try {
-            return ResponseEntity(productService.getProduct(id), HttpStatus.OK)
+        return try {
+            ResponseEntity(productService.getProduct(id), HttpStatus.OK)
         } catch (e: NotFoundException) {
-            return ResponseEntity(HttpStatus.NOT_FOUND)
+            ResponseEntity(HttpStatus.NOT_FOUND)
 
         }
     }

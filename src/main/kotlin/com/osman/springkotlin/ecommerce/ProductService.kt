@@ -2,20 +2,20 @@ package com.osman.springkotlin.ecommerce
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class ProductService @Autowired constructor(val productRepository: ProductRepository, val inventoryService: InventoryService) {
-
+    private val inventory_Id = "inventory-1321"
 
     // Todo add some validation to the logic
     fun create(product: Product, stockQuantiry: Int): Product {
-        if (productRepository.findById(product.id!!).isPresent) {
-            throw  IllegalArgumentException("person with the id  ${product.id} already exist")
+        if (productRepository.findAll().find { p -> p.name == product.name && p.description == product.description } != null) {
+            throw  IllegalArgumentException("product with the id  ${product.id} already exist")
         }
+        product.id = UUID.randomUUID().toString()
         return save(product, stockQuantiry)
     }
-
-    private val inventory_Id = "inventory-1321"
 
     private fun save(product: Product, stockQuantity: Int): Product {
         return if (inventoryService.count() == 0L) {
